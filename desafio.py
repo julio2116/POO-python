@@ -13,7 +13,24 @@ class VetorNaoOrdenado:                                         #definição da 
             for i in range(self.ultimaPosicao + 1):             #A estrutura for in percorre um a um todos os itens de um array, a função "range" cria uma estrutura de 0 a até o valor numerico inteiro do parâmetro informado, sendo uma estrutura iterável por estruturas de repetição - Como o valor de ultimaPosicao se refere a posição dentro do array (de 0 a n), é necessário somar mais 1
                 print(i, '-', self.valores[i])                  #A função print é executada ua vez para cada iteração, portanto cada item dentro do vetor
     
+    def inserir(self, valor):
+        if self.ultimaPosicao == self.tamanhoVetor - 1:         #Verifica se o tamnho do vetor é igual a última posição do vetor, pois a cada valor inserido o valor da varial última posição também aumenta
+            print("Tamanho máximo do vetor foi atingido")
+        else:
+            self.ultimaPosicao += 1
+            self.valores[self.ultimaPosicao] = valor            #Listas podem ser acessadas em posições especificas através do simbolo "[]" onde deve ser informado um numero interio que representa a posição do valor a ser acessado, aqui acessamos a últma posição (que representa o ultimo elemento válido dentro do vetor), e então inserimos o valor passado no parâmetro
 
-vetor = VetorNaoOrdenado(5)
+
+
+
+vetor = VetorNaoOrdenado(7)
 vetor.imprimir()
-print(range(5))
+vetor.inserir(4)
+vetor.inserir(6)
+vetor.inserir(8)
+vetor.inserir(2)
+vetor.inserir(1)
+vetor.inserir(2)
+vetor.inserir(1)
+vetor.inserir(9)
+vetor.imprimir()
