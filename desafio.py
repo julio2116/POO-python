@@ -20,10 +20,58 @@ class VetorNaoOrdenado:                                         #definição da 
             self.ultimaPosicao += 1
             self.valores[self.ultimaPosicao] = valor            #Listas podem ser acessadas em posições especificas através do simbolo "[]" onde deve ser informado um numero interio que representa a posição do valor a ser acessado, aqui acessamos a últma posição (que representa o ultimo elemento válido dentro do vetor), e então inserimos o valor passado no parâmetro
 
+    def pesquisar(self, valor):
+        for i in range(self.ultimaPosicao + 1):                 #itera sobre cada elemento do array e compara o valor atual com o valor recebido pelo parâmetro
+            if valor == self.valores[i]:                        #Caso os valores sejam iguais retorna o valor de i usado para acessar a posição do array que deu match (indice do elemento)
+                return i                                        #Encerra a função caso o valor esteja presente no array, caso hajam dois valores iguais será retornado o indice do primeiro valor
+        return -1                                               #Caso não encontre retorna -1 como um sinal de que o valor buscado não se encontra no array
+
+    def excluir(self, valor):
+        posicao = self.pesquisar(valor)                         #usamos o método interno "pesquisar" para obter o indice do valor alvo da exclusão
+        if posicao == -1:                                       #Caso o retorno da função anterior seja -1 siginifica que o elemento não existe o vetor, portanto retornamos também -1
+            return -1
+        else:
+            for i in range(posicao, self.ultimaPosicao):        #É feito um range que ao invés de partir de 0 parte parte do indice alvo da exclusão até o último indice do array
+                self.valores[i] = self.valores[i + 1]           #Para simular uma exclusão é feita uma sobreposição dos valores a partir (e incluindo) do indice do elemento alvo da exclusão
+            self.ultimaPosicao -= 1                             #Como não é feita uma exclusão real, o último valor permanece no array porém ao reduzir o indice tornamos seu valor inacessivel ao usuáio
 
 
+class VetorOrdenado:
+    def __init__(self, tamanhoVetor):
+        self.tamanhoVetor = tamanhoVetor
+        self.ultimaPosicao = -1
+        self.valores = np.empty(self.tamanhoVetor, dtype=int)
+    
+    def imprimir(self):
+        if self.ultimaPosicao == -1:
+            print('Vetor está vazio')
+        else:
+            for i in range(self.ultimaPosicao + 1):
+                print(i, '-', self.valores[i])
 
-vetor = VetorNaoOrdenado(7)
+    def inserir(self, valor):
+        if self.ultimaPosicao == self.tamanhoVetor - 1:         #Comparação para verificar se a aultima posição já foi atingida, caso sim, não executa o restante da lógica de inserção
+            print("Tamanho máximo do vetor atingido")
+            return                                              #O uso de return é uma das formas de encerrar a chamada de uma função, interrompendo seu fluxo completo
+        
+        posicao = 0                                             #Definição da variavel posição para uso fora do escopo da função for, onde seu valor é manipulado
+        for i in range(self.ultimaPosicao + 1):                 #Range equivalente ao tamanho de valores válidos dentro do vetor
+            posicao = i                                         #Posição assume o valor de i
+            if self.valores[i] > valor:                         #Caso o valor atualmente verificado seja maior que o valor a ser inserido o laço é quebrado e sabemos que a posição correta a inserir o valor é i
+                break
+            if i == self.ultimaPosicao:                         #Se formos até o último valor sem encontrar um valor maior que o a ser inserido, este valor deve ficar na última posição de valores válidos i + 1
+                posicao = i + 1
+
+        y = self.ultimaPosicao
+        while y >= posicao:                                     #y é um contador a ser decrementado, para não sobreescrever um valor que deveria ser acessado posteriormente para reposicionamento (assim perdendo seu valor), precisamos iniciar do final e decrementar de volta a posição onde o novo valor será inserido
+            self.valores[y + 1] = self.valores[y]               #Acessa a posição seguinte (y + 1) e atribui a ela a posição atual, desta forma a posição correta logo poderá ser sobreescrita sem riscos de perda a informação
+            y -= 1                                              #Decrementa y para acessar os valores mais antigos a cada iteração
+
+        self.valores[posicao] = valor                           #Atribui na posição correta o valor reebido no parâmetro da função
+        self.ultimaPosicao += 1                                 #Aumenta o limite de posições acessaveis no array
+    
+
+vetor = VetorOrdenado(8)
 vetor.imprimir()
 vetor.inserir(4)
 vetor.inserir(6)
