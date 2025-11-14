@@ -5,21 +5,31 @@
 def readValues():
     lista = []
     for i in range(10):
-        inputNumber = int(input(f"informe o número {i}:\n"))
+        inputNumber = int(input(f"informe o número {i + 1}:\n"))
         lista.append(inputNumber)
 
-    ref = int(input("Informe um numero de referência"))
+    ref = int(input("Informe um numero de referência:\n"))
 
-    # if lista is None or ref is None:
-    #     raise ValueError("Informe uma lista e uma referencia")
-    # if not isinstance(lista, list) or not isinstance(ref, int):
-    #     raise ValueError("A lista e a referencia tem de ser do tipo int")
+    numerosMaiores = []
+    numerosMenores = []
+    refRepetida = 0
+
+    for number in lista:
+        if number > ref:
+            numerosMaiores.append(number)
+        if number < ref:
+            numerosMenores.append(number)
+        if number == ref:
+            refRepetida += 1
+
+    if len(numerosMaiores) > 0:
+        print(f"Numeros MAIORES que o numero de referência {ref}:")
+        for number in numerosMaiores:
+            print(number)
+    if len(numerosMenores) > 0:
+        print(f"{len(numerosMenores)} numeros, são menores que o numero de referência {ref}:")
+    if refRepetida > 0:
+        print(f"O referência {ref}, se repete {refRepetida} vezes no vetor")
     
 
-def teste():
-    try:
-        readValues()
-    except ValueError as error:
-        print(f"Error: {error}")
-
-teste()
+readValues()
