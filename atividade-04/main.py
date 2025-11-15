@@ -14,13 +14,13 @@ class Produto:
         return self.__preco
 
     @nome.setter
-    def nome(self, nome: str = None):
-        if nome is None or not isinstance(nome, str):
+    def nome(self, nome: str):
+        if nome is None or not isinstance(nome, str) or len(nome) < 1 or nome.isspace():
             raise ValueError("Atributo nome deve ser uma string válida")
         self.__nome = nome
         
     @preco.setter
-    def preco(self, valor: int | float = None):
+    def preco(self, valor: int | float):
         if valor is None or not isinstance(valor, (int, float)) or valor < 0:
             raise ValueError("Atributo preco deve ser um número maior que 0")
         self.__preco = valor
@@ -34,8 +34,37 @@ class Produto:
 
 
 class Cliente:
-    # implemente aqui a classe Cliente
-    pass
+    def __init__(self, nome: str = None, email: str = None):
+        self.nome = nome
+        self.email = email
+
+    @property
+    def nome(self):
+        return self.__nome
+    @property
+    def email(self):
+        return self.__email
+    
+    @nome.setter
+    def nome(self, nome):
+        Cliente.__verificar_string(nome, "nome")
+        self.__nome = nome
+        
+    @email.setter
+    def email(self, email):
+        Cliente.__verificar_string(email, "email")
+        if not '@' in email or not '.' in email:
+            raise ValueError("Informe um email válido, deve conter @ e .")
+        self.__email = email
+
+    @staticmethod  
+    def __verificar_string(string: str, teste: str):
+        if string is None or not isinstance(string, str):
+            raise ValueError(f"Atributo {teste} é obrigatório e deve ser string")
+        
+    def __str__(self):
+        return f"{self.__nome} <{self.email}>"
+
 
 # ======== ÁREA DO PROFESSOR / TESTES ========
 # !!!!!! NÃO MEXA AQUI !!!! PODE AFETAR SUA NOTA
