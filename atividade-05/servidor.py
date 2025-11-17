@@ -10,13 +10,14 @@ def server():
 
     connection, address = s.accept()                        #Retorna um novo objeto do tipo socket, uma nova conexão diferente da de .listen(), para envio e recebimento de dados
     print(address)
-    data = connection.recv(1024)                            #Variavel conn, nunca havia sido declarada, recebe informações do cliente, 1024 é a quantidade máxima de dados a ser recebida de cada vez
 
-    if not data:
-        connection.sendall(data)                            #Usar .send() faria com que tivessemos que checar se todos os dados foram enviados e então chamar .send() quantas vezes forem necessárias
+    while True:
+        data = connection.recv(1024)                            #Variavel conn, nunca havia sido declarada, recebe informações do cliente, 1024 é a quantidade máxima de dados a ser recebida de cada vez
+        if not data:                                            #Havia um erro que tentava enviar data quando a conexão s estava fechada
+            break
     print(data)
     MSG = data.decode().upper()
-    connection.sendall(str.encode(MSG))
+    connection.sendall(str.encode(MSG))                     #Usar .send() faria com que tivessemos que checar se todos os dados foram enviados e então chamar .send() quantas vezes forem necessárias
 
     connection.close()                                      #Neste ponto existem dois sockets abertos, por isso ambos devem ser fechados, s sendo o servidor ouvindo requisições e connection sendo a conexão de transmissão de dados, aberta sempre que uma requisição é recebida
     s.close()                                               #O garbage colector do python realiza o close() automaticamente se for necessário, porém é uma má prática não fazer isso de forma esplicita
