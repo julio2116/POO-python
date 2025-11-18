@@ -1,19 +1,22 @@
 import socket
 
 def clientRequest(msg):
-    server_address = (socket.gethostname(), 5000)                   #Trocar o host pela função .gethostname() retorna o Ip de rede local
+    server_address = ('127.0.0.1', 5000)                   #Trocar o host pela função .gethostname() retorna o Ip de rede local
 
-    MSG = msg
+    MSG = str.encode(msg)
 
-    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)           #Ao usar socket.SOCKET_STREAM, por padrão usamos o protocolo TCP
+    # s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)           #Ao usar socket.SOCKET_STREAM, por padrão usamos o protocolo TCP
+    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 
-    s.connect(server_address)                                       #Estabelece a conxão com o servidor
+    # s.connect(server_address)                                       #Estabelece a conxão com o servidor
                                                                     #.connect() espera receber uma tupla com com o IP e a porta
-    s.sendall(str.encode(MSG))                                      #Envia informações a conexão
+    # s.sendall(str.encode(MSG))                                      #Envia informações a conexão
+    s.sendto(MSG, server_address)
 
-    data = s.recv(1024)
+    # data = s.recv(1024)
+    data, address = s.recvfrom(1024)
 
-    print(data)
+    print(data.decode())
 
     s.close()
 
