@@ -1,0 +1,203 @@
+# ======== ÁREA DO ALUNO ========
+# Implemente aqui as classes solicitadas no enunciado
+# Use os mesmos nomes de classes e métodos.
+
+
+
+
+
+# ======== ÁREA DO PROFESSOR — NÃO ALTERAR ========
+# Orquestrador de testes para o VPL usando vpl_evaluate.cases
+
+import io
+import sys
+import contextlib
+
+
+def _safe_run(func, *args, **kwargs):
+    buf = io.StringIO()
+    with contextlib.redirect_stdout(buf):
+        try:
+            ret = func(*args, **kwargs)
+            return True, ret, buf.getvalue()
+        except Exception as e:
+            return False, e, buf.getvalue()
+
+
+def _ok(cond, msg):
+    if not cond:
+        raise AssertionError(msg)
+
+
+def _contains_any(text, kws):
+    t = text.lower()
+    return any(k.lower() in t for k in kws)
+
+
+def _extract_text(ret, printed):
+    if isinstance(ret, str) and ret.strip():
+        return ret.strip()
+    if printed.strip():
+        return printed.strip()
+    return ""
+
+
+# Cada função cmd_* faz UM teste e imprime:
+# - "OK" se passar
+# - "FAIL: mensagem" se falhar
+
+def cmd_exists():
+    try:
+        for name in ["Pessoa", "Funcionario", "Estudante", "Gerente", "AssistentePesquisa"]:
+            _ok(hasattr(sys.modules[__name__], name), "Classe ausente: " + name)
+        print("OK")
+    except Exception as e:
+        print("FAIL:", e)
+
+
+def cmd_inheritance():
+    try:
+        P = Pessoa
+        F = Funcionario
+        E = Estudante
+        G = Gerente
+        AP = AssistentePesquisa
+
+        _ok(issubclass(F, P), "Funcionario deve herdar de Pessoa")
+        _ok(issubclass(E, P), "Estudante deve herdar de Pessoa")
+        _ok(issubclass(G, F), "Gerente deve herdar de Funcionario")
+        _ok(issubclass(AP, E), "AssistentePesquisa deve herdar de Estudante")
+        _ok(issubclass(AP, F), "AssistentePesquisa deve herdar de Funcionario")
+
+        print("OK")
+    except Exception as e:
+        print("FAIL:", e)
+
+
+def cmd_pessoa_apresentar():
+    try:
+        p = Pessoa("Ana")
+        ok_ret, ret, printed = _safe_run(p.apresentar)
+        t = _extract_text(ret, printed)
+        _ok("ana" in t.lower(), "Pessoa.apresentar deve mencionar o nome")
+        print("OK")
+    except Exception as e:
+        print("FAIL:", e)
+
+
+def cmd_func_apresentar():
+    try:
+        f = Funcionario("Joao", 5000)
+        ok_ret, ret, printed = _safe_run(f.apresentar)
+        t = _extract_text(ret, printed)
+        _ok(_contains_any(t, ["funcion", "sal", "5000"]), "Funcionario.apresentar incompleto")
+        print("OK")
+    except Exception as e:
+        print("FAIL:", e)
+
+
+def cmd_est_apresentar():
+    try:
+        e = Estudante("Maria", "Computacao", 900)
+        ok_ret, ret, printed = _safe_run(e.apresentar)
+        t = _extract_text(ret, printed)
+        _ok(_contains_any(t, ["estud", "curso", "comput", "bolsa"]), "Estudante.apresentar incompleto")
+        print("OK")
+    except Exception as e:
+        print("FAIL:", e)
+
+
+def cmd_gerente_apresentar():
+    try:
+        g = Gerente("Bia", 8000, ["Ana", "Pedro"])
+        ok_ret, ret, printed = _safe_run(g.apresentar)
+        t = _extract_text(ret, printed)
+        _ok(_contains_any(t, ["equipe", "ana", "pedro", "2"]), "Gerente.apresentar incompleto")
+        print("OK")
+    except Exception as e:
+        print("FAIL:", e)
+
+
+def cmd_assistente_mro():
+    try:
+        mro = [c.__name__ for c in AssistentePesquisa.mro()]
+        _ok("Estudante" in mro, "MRO não contém Estudante")
+        _ok("Funcionario" in mro, "MRO não contém Funcionario")
+        _ok(mro.index("Estudante") < mro.index("Funcionario"),
+            "Estudante deve vir antes de Funcionario no MRO")
+        print("OK")
+    except Exception as e:
+        print("FAIL:", e)
+
+
+def cmd_assistente_apresentar():
+    try:
+        ap = AssistentePesquisa("Leo", "ADS", 3000, 500)
+        ok_ret, ret, printed = _safe_run(ap.apresentar)
+        t = _extract_text(ret, printed)
+        _ok(_contains_any(t, ["estud", "ads", "curso"]),
+            "AssistentePesquisa.apresentar não menciona Estudante")
+        _ok(_contains_any(t, ["funcion", "sal", "3000"]),
+            "AssistentePesquisa.apresentar não menciona salário")
+        print("OK")
+    except Exception as e:
+        print("FAIL:", e)
+
+
+def cmd_super_chain():
+    try:
+        ap = AssistentePesquisa("Joao", "Engenharia", 3500, 700)
+
+        _ok(hasattr(ap, "nome"), "nome não inicializado")
+        _ok(hasattr(ap, "curso"), "curso não inicializado")
+        _ok(hasattr(ap, "salario"), "salario não inicializado")
+        _ok(hasattr(ap, "bolsa"), "bolsa não inicializada")
+
+        _ok(ap.nome == "Joao", "nome incorreto")
+        _ok(ap.curso == "Engenharia", "curso incorreto")
+        _ok(float(ap.salario) == 3500, "salario incorreto")
+        _ok(float(ap.bolsa) == 700, "bolsa incorreta")
+
+        print("OK")
+    except Exception as e:
+        print("FAIL:", e)
+
+
+def cmd_calc_methods():
+    try:
+        f = Funcionario("Zoe", 6000)
+        e = Estudante("Marcos", "SI", 550)
+
+        ok_ret, ret, _ = _safe_run(f.calcular_salario)
+        _ok(isinstance(ret, (int, float)) and float(ret) == 6000,
+            "calcular_salario errado")
+
+        ok_ret, ret, _ = _safe_run(e.calcular_bolsa)
+        _ok(isinstance(ret, (int, float)) and float(ret) == 550,
+            "calcular_bolsa errado")
+
+        print("OK")
+    except Exception as e:
+        print("FAIL:", e)
+
+
+CMDS = {
+    "exists": cmd_exists,
+    "inheritance": cmd_inheritance,
+    "pessoa_apresentar": cmd_pessoa_apresentar,
+    "func_apresentar": cmd_func_apresentar,
+    "est_apresentar": cmd_est_apresentar,
+    "gerente_apresentar": cmd_gerente_apresentar,
+    "assist_mro": cmd_assistente_mro,
+    "assist_apresentar": cmd_assistente_apresentar,
+    "super_chain": cmd_super_chain,
+    "calc_methods": cmd_calc_methods,
+}
+
+if __name__ == "__main__":
+    comando = sys.stdin.read().strip()
+    func = CMDS.get(comando)
+    if func is None:
+        print("FAIL: comando inválido:", comando)
+    else:
+        func()
