@@ -3,8 +3,9 @@
 # Use os mesmos nomes de classes e métodos.
 
 class Pessoa:
-    def __init__(self, nome: str = None):
+    def __init__(self, nome: str = None, **kwargs):
         self.nome = nome
+        super().__init__(**kwargs)
 
     @property
     def nome(self):
@@ -17,12 +18,12 @@ class Pessoa:
         self.__nome = nome
 
     def apresentar(self):
-        print(f"Olá, eu sou {self.__nome}")
+        return f"Olá, eu sou {self.__nome}"
 
 class Funcionario(Pessoa):
-    def __init__(self, nome: str = None, salario: float|int = None):
-        super().__init__(nome)
+    def __init__(self, nome, salario: float|int = None, **kwargs):
         self.salario = salario
+        super().__init__(nome=nome, **kwargs)
 
     @property
     def salario(self):
@@ -30,7 +31,7 @@ class Funcionario(Pessoa):
 
     @salario.setter
     def salario(self, salario: float|int = None):
-        if salario is None or isinstance(salario, (float, int)) or salario <= 0:
+        if salario is None or not isinstance(salario, (float, int)) or salario <= 0:
             raise ValueError("Atributo salario deve ser do tipo int ou float e ter valor acima de 0")
         self.__salario = float(salario)
 
@@ -39,14 +40,14 @@ class Funcionario(Pessoa):
     
     def apresentar(self):
         super().apresentar()
-        print("Atualmente estou trabalhando")
+        return "Atualmente estou trabalhando e recebendo um bom salário"
 
 
 class Estudante(Pessoa):
-    def __init__(self, nome:str = None, curso:str = None, bolsa: float|int = None):
-        super().__init__(nome)
+    def __init__(self, nome, curso:str = None, bolsa: float|int = None, **kwargs):
         self.curso = curso
         self.bolsa = bolsa
+        super().__init__(nome=nome, **kwargs)
 
     @property
     def curso(self):
@@ -64,7 +65,7 @@ class Estudante(Pessoa):
     
     @bolsa.setter
     def bolsa(self, bolsa: float|int = None):
-        if bolsa is not None and (not isinstance(bolsa, (int, float)) or len(bolsa) < 1):
+        if bolsa is not None and (not isinstance(bolsa, (int, float)) or bolsa <= 0):
             raise("Bolsa deve ser um numero acima de 0")
         self.__bolsa = bolsa
 
@@ -74,30 +75,30 @@ class Estudante(Pessoa):
         return f"O Aluno {self.nome} não possui bolsa"
     
     def apresentar(self):
-        print(f"Meu nome é {self.nome} e sou estudante")
+        return f"Meu nome é {self.nome} e sou estudante"
 
 
 class Gerente(Funcionario):
-    def __init__(self, nome, salario, equipe:list[Funcionario] = None):
-        super().__init__(nome, salario)
+    def __init__(self, nome, salario, equipe:list[Funcionario | str] = None, **kwargs):
         self.equipe = equipe
+        super().__init__(nome=nome, salario=salario, **kwargs)
 
     @property
     def equipe(self):
         return self.__equipe
     
     @equipe.setter
-    def equipe(self, equipe:list[Funcionario] = None):
-        if equipe is not None and not isinstance(equipe, list):
-            raise ValueError("Atributo equipe deve ser do tipo list de Funcionarios ou do tipo Funcionario")
-        if equipe is not None and isinstance(equipe, list):
+    def equipe(self, equipe:list[Funcionario | str] = None):
+        if equipe is not None and not isinstance(equipe, (list, str)):
+            raise ValueError("Atributo equipe deve ser do tipo list de Funcionarios ou string ou do tipo Funcionario ou string")
+        if equipe is not None and isinstance(equipe, (list, str)):
             for funcionario in equipe:
-                if not isinstance(funcionario, Funcionario):
-                    raise ValueError("Todos os funcionários devem ser do tipo Funcionario")
+                if not isinstance(funcionario, (Funcionario, str)):
+                    raise ValueError("Todos os funcionários devem ser do tipo Funcionario ou string")
             self.__equipe = equipe
         
-    def incluirFuncionario(self, funcionario: str = None):
-        if funcionario is not None and isinstance(funcionario, Funcionario):
+    def incluirFuncionario(self, funcionario: Funcionario | str = None):
+        if funcionario is not None and isinstance(funcionario, (Funcionario, str)):
             self.__equipe.append(funcionario)
 
     def apresentar(self):
@@ -106,7 +107,10 @@ class Gerente(Funcionario):
 
 class AssistentePesquisa(Estudante, Funcionario):
     def __init__(self, nome, curso, salario, bolsa):
-        super().__init__(nome, curso, salario, bolsa)
+        super().__init__(nome=nome, curso=curso, salario=salario, bolsa=bolsa)
+    
+    def apresentar(self):
+        return f"Olá meu nome é {self.nome}, aluno do curso de {self.curso}, não vou dizer meu salário"
 
 
 # ======== ÁREA DO PROFESSOR — NÃO ALTERAR ========
