@@ -15,30 +15,38 @@ class FilaCircular:
         return self.numero_de_elementos == self.tamanhoVetor
     
     def enfileirar(self, valor):                                #Insere um novo item na fila
-        if self.__fila_cheia():                                 #Verifica se a fila esta cheia para evitar processamento desnecessario
+        if self.__fila_cheia():                                 #Verifica se a fila esta cheia para evitar erros e processamento desnecessario
             print('A fila está cheia')
             return
         if self.final == self.tamanhoVetor -1:                  #Se estiver no indice do ultimo elemento passa de volta ao primeiro elemento
             self.final = -1
         self.final += 1                                         #Se não estiver no ultimo avança o indice para o proximo elemento
         self.valores[self.final] = valor                        #Reatribui o valor a ser incluído na posição correta
-        self.numero_de_elementos += 1
+        self.numero_de_elementos += 1                           #Adiciona um ao numero de elementos quando o novo valor for adicionado à fila
 
-    def desenfileirar(self):
-        if self.__fila_vazia():
+    def desenfileirar(self):                                    #Função para retirar o item da lista
+        if self.__fila_vazia():                                 #Verifica se a fila está vazia para evitar erros e processamento desnecessário
             print('A fila está vazia')
             return
 
-        temporaria = self.valores[self.inicio]
-        self.inicio += 1
-        if self.inicio == self.tamanhoVetor:
-            self.inicio = 0
-            self.numero_de_elementos -= 1
-        return temporaria
+        temporaria = self.valores[self.inicio]                  #Armazena o valor removido temporariamente para retorna-lo posteriormente
+        self.inicio += 1                                        #Avança para o próximo elemento da fila nas próximas execuções
+        if self.inicio == self.tamanhoVetor:                    #Verifica se está no último elemento da lista
+            self.inicio = 0                                     #Caso esteja no último elemento, retorna as execuções ao primeiro item
+            self.numero_de_elementos -= 1                       #Reduz o numero de elementos
+        return temporaria                                       #Retorna o elemento removido
+
+    def primeiroFila(self):
+        if self.__fila_vazia():
+            return -1
+        return self.valores[self.inicio]                        #Retorna o primeiro elemento da fila (O próximo a ser "trabalhado")
 
 fila = FilaCircular(6)
 fila.enfileirar(1)
 fila.enfileirar(3)
+print(fila.primeiroFila())
 print(fila.desenfileirar())
 fila.enfileirar(2)
+print(fila.primeiroFila())
 print(fila.desenfileirar())
+print(fila.primeiroFila())
