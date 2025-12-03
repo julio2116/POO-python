@@ -29,7 +29,11 @@ class Rifa:
             raise ValueError("Argumento precisa ser uma lista ou uma string")
         if(isinstance(valor, list)):
             for i in valor:
-                self._nomes.append(i)
+                if(not isinstance(i, str)):
+                    raise ValueError("Todos os elementos devem ser do tipo string")
+                
+        if(isinstance(valor, list)):
+            self._nomes += valor
             return
         self._nomes.append(valor)
 
